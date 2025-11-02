@@ -10,7 +10,7 @@ FALL_ASLEEP_BUFFER_MINUTES = 15
 
 # --- Helper Functions ---
 def calculate_wake_up_times(from_time):
-    """Calculates optimal wake-up times based on sleep cycles."""
+    """Calculates optimal wake-up times based on sleep cycles..."""
     wake_up_times = []
     # Start with the fall-asleep buffer
     current_time = from_time + timedelta(minutes=FALL_ASLEEP_BUFFER_MINUTES)
