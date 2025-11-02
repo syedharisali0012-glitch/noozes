@@ -1,12 +1,387 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hello World</title>
-  </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noozes - Sleep Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #0a0a0a;
+            --primary-text: #e0e0e0;
+            --card-bg: #1a1a1a;
+            --accent-color: #4a0e6b;
+            --accent-gradient: linear-gradient(45deg, #4a0e6b, #8a2be2);
+            --font-dreamy: 'Pacifico', cursive;
+            --font-body: 'Comfortaa', sans-serif;
+            --border-radius: 15px;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
 
-  <body>
-    <h1>Hello World</h1>
-  </body>
+        body {
+            background-color: var(--primary-bg);
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(74, 14, 107, 0.3), transparent 30%),
+                radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.2), transparent 40%),
+                radial-gradient(circle at 50% 80%, rgba(74, 14, 107, 0.25), transparent 35%);
+            color: var(--primary-text);
+            font-family: var(--font-body);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 1s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-family: var(--font-dreamy);
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 5px;
+            box-shadow: var(--shadow);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 10px;
+            border: none;
+            background: transparent;
+            color: var(--primary-text);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .calculator {
+            display: none;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            animation: fadeIn 0.5s;
+        }
+
+        .calculator.active {
+            display: block;
+        }
+
+        .calculator p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .time-input {
+            width: 80%;
+            padding: 15px;
+            margin-bottom: 1.5rem;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: var(--primary-text);
+            font-family: var(--font-body);
+            font-size: 1.2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .calc-button {
+            padding: 15px 30px;
+            border: none;
+            background: var(--accent-gradient);
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 10px rgba(138, 43, 226, 0.4);
+        }
+
+        .calc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.6);
+        }
+
+        #results {
+            margin-top: 2rem;
+        }
+
+        .result-heading {
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+            animation-delay: 0.2s;
+        }
+
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 15px;
+            margin-top: 1rem;
+            opacity: 0;
+            animation: fadeIn 0.8s forwards;
+            animation-delay: 0.4s;
+        }
+
+        .suggestion-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            position: relative;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .suggestion-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .suggestion-time {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .suggestion-cycle {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2a2a2a;
+            border: none;
+            color: var(--primary-text);
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s, background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--accent-color);
+            opacity: 1;
+        }
+
+        .copy-feedback {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-gradient);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+            pointer-events: none;
+        }
+
+        .copy-feedback.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        footer {
+            margin-top: 3rem;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Noozes</h1>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('wake-up-at')">I want to wake up at...</button>
+            <button class="tab-button" onclick="switchTab('go-to-bed-at')">I want to go to bed at...</button>
+            <button class="tab-button" onclick="switchTab('sleep-now')">If I sleep now</button>
+        </div>
+
+        <!-- Calculator Modes -->
+        <div id="wake-up-at" class="calculator active">
+            <p>Calculate the best times to fall asleep if you want to wake up at a specific time.</p>
+            <input type="time" id="wake-up-time" class="time-input">
+            <button class="calc-button" onclick="calculateBedtime()">Calculate Bedtimes</button>
+        </div>
+
+        <div id="go-to-bed-at" class="calculator">
+            <p>Calculate the best times to wake up if you go to bed at a specific time.</p>
+            <input type="time" id="bed-time" class="time-input">
+            <button class="calc-button" onclick="calculateWakeUp()">Calculate Wake-Up Times</button>
+        </div>
+
+        <div id="sleep-now" class="calculator">
+            <p>Calculate the best times to wake up if you go to sleep right now.</p>
+            <button class="calc-button" onclick="calculateFromNow()">Calculate From Now</button>
+        </div>
+
+        <!-- Results -->
+        <div id="results"></div>
+    </div>
+    <div class="copy-feedback" id="copy-feedback">Copied to clipboard!</div>
+
+
+    <script>
+        // --- Tab Switching ---
+        function switchTab(tabId) {
+            // Hide all calculators
+            document.querySelectorAll('.calculator').forEach(calc => {
+                calc.classList.remove('active');
+            });
+            // Deactivate all tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            // Show the selected calculator
+            document.getElementById(tabId).classList.add('active');
+            // Activate the selected tab button
+            event.target.classList.add('active');
+            // Clear previous results
+            document.getElementById('results').innerHTML = '';
+        }
+
+        // --- API Calls & Result Display ---
+        async function fetchData(endpoint, body) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p class="result-heading">Calculating...</p>'; // Show loading
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                displaySuggestions(data.suggestions, body.mode);
+            } catch (error) {
+                console.error('Fetch error:', error);
+                resultsDiv.innerHTML = '<p class="result-heading">Sorry, something went wrong. Please try again.</p>';
+            }
+        }
+
+        function calculateFromNow() {
+            fetchData('/api/calculate-from-now', { mode: 'wake up' });
+        }
+
+        function calculateWakeUp() {
+            const timeInput = document.getElementById('bed-time').value;
+            if (!timeInput) { alert("Please select a time."); return; }
+            fetchData('/api/calculate-wake-up', { time: timeInput, mode: 'wake up' });
+        }
+
+        function calculateBedtime() {
+            const timeInput = document.getElementById('wake-up-time').value;
+            if (!timeInput) { alert("Please select a time."); return; }
+            fetchData('/api/calculate-bedtime', { time: timeInput, mode: 'go to bed' });
+        }
+
+        function displaySuggestions(suggestions, mode) {
+            const resultsDiv = document.getElementById('results');
+            if (!suggestions || suggestions.length === 0) {
+                resultsDiv.innerHTML = '<p class="result-heading">Could not calculate suggestions. Please check the time.</p>';
+                return;
+            }
+
+            const headingText = mode === 'wake up'
+                ? "You should try to wake up at one of the following times:"
+                : "You should try to go to bed at one of the following times:";
+
+            let html = `<h2 class="result-heading">${headingText}</h2><div class="suggestions-grid">`;
+
+            suggestions.forEach((time, index) => {
+                const cycleCount = suggestions.length - index;
+                const cycleText = `${cycleCount} sleep cycle${cycleCount > 1 ? 's' : ''}`;
+                html += `
+                    <div class="suggestion-card" style="animation-delay: ${index * 0.1}s;">
+                        <div class="suggestion-time">${time}</div>
+                        <div class="suggestion-cycle">${cycleText}</div>
+                        <button class="copy-btn" onclick="copyToClipboard('${time}', this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M4 1.5H3a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zM-1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1z"/>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            resultsDiv.innerHTML = html;
+            // Force reflow to restart animations
+            resultsDiv.style.animation = 'none';
+            void resultsDiv.offsetWidth;
+            resultsDiv.style.animation = null;
+        }
+
+        // --- Utility ---
+        function copyToClipboard(text, element) {
+            navigator.clipboard.writeText(text).then(() => {
+                const feedback = document.getElementById('copy-feedback');
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        // --- Initial Load ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // Set default time for inputs
+            const now = new Date();
+            const timeString = now.toTimeString().substring(0, 5);
+            document.getElementById('wake-up-time').value = timeString;
+            document.getElementById('bed-time').value = timeString;
+
+            // Set default tab
+            switchTab('wake-up-at');
+        });
+
+    </script>
+</body>
 </html>
